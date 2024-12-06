@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Microsoft Bing</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Previous CSS remains the same */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+      }
+
+      /* Updated for vertical scrolling container */
+      .vertical-scroll-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+        height: calc(
+          100vh - 300px
+        ); /* Adjust based on your header/search height */
+        overflow-y: auto;
+      }
+
+      /* Category section styles */
+      .category-section {
+        margin-bottom: 2.5rem;
+      }
+
+      .category-title {
+        color: white;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        padding-left: 0.5rem;
+      }
+
+      /* Horizontal cards container */
+      .cards-container {
+        overflow-x: auto;
+        display: flex;
+        gap: 2rem;
+        padding-bottom: 1.5rem;
+        scroll-behavior: smooth;
+      }
+
+      /* Card styles */
+      .card {
+        min-width: 400px;
+        height: 300px;
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transition: all 0.4s ease;
+        cursor: pointer;
+      }
+
+      .card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      .card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      .card:hover .card-image {
+        transform: scale(1.05);
+      }
+
+      .card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(
+          transparent,
+          rgba(0, 0, 0, 0.7) 40%,
+          rgba(0, 0, 0, 0.9)
+        );
+        padding: 2rem;
+        color: white;
+        transform: translateY(0);
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover .card-overlay {
+        transform: translateY(-8px);
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .card-description {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        line-height: 1.4;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Scrollbar styles for both vertical and horizontal scrolling */
+      .vertical-scroll-container::-webkit-scrollbar,
+      .cards-container::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      .vertical-scroll-container::-webkit-scrollbar-track,
+      .cards-container::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 5px;
+      }
+
+      .vertical-scroll-container::-webkit-scrollbar-thumb,
+      .cards-container::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 5px;
+        transition: background 0.3s ease;
+      }
+
+      .vertical-scroll-container::-webkit-scrollbar-thumb:hover,
+      .cards-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          min-width: 320px;
+          height: 240px;
+        }
+
+        .card-title {
+          font-size: 1.3rem;
+        }
+
+        .card-description {
+          font-size: 1rem;
+        }
+
+        .category-title {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <rect width="11" height="11" x="3" y="3" fill="#F25022" />
+          <rect width="11" height="11" x="15" y="3" fill="#7FBA00" />
+          <rect width="11" height="11" x="3" y="15" fill="#00A4EF" />
+          <rect width="11" height="11" x="15" y="15" fill="#FFB900" />
+        </svg>
+        <span class="logo-text">Microsoft Bing</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#">Copilot</a>
+        <a href="#">Images</a>
+        <a href="#">Videos</a>
+        <a href="#">Shopping</a>
+        <a href="#">Maps</a>
+        <a href="#">News</a>
+        <a href="#">...</a>
+      </nav>
+      <div class="right-nav">
+        <button class="icon-button">Sign in</button>
+        <div class="mobile-icon"></div>
+        <div class="menu-icon">≡</div>
+      </div>
+    </header>
+
+    <main>
+      <div class="search-container">
+        <!-- Search icon at the front -->
+        <div class="search-icon-front">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 19L15.5 15.5M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+            ></path>
+          </svg>
+        </div>
+        <input type="text" class="search-bar" placeholder="Search the web" />
+        <div class="search-icons">
+          <!-- Microphone icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 1C10.343 1 9 2.343 9 4V12C9 13.657 10.343 15 12 15C13.657 15 15 13.657 15 12V4C15 2.343 13.657 1 12 1Z"
+            ></path>
+            <path
+              d="M19 11V12C19 15.866 15.866 19 12 19C8.134 19 5 15.866 5 12V11"
+            ></path>
+            <line x1="12" y1="23" x2="12" y2="19"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+          <!-- Google Lens icon -->
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              x="3"
+              y="3"
+              width="18"
+              height="18"
+              rx="5"
+              ry="5"
+              stroke="currentColor"
+              fill="none"
+            ></rect>
+            <circle
+              cx="12"
+              cy="12"
+              r="4"
+              stroke="currentColor"
+              fill="none"
+            ></circle>
+            <line x1="6" y1="12" x2="9" y2="12" stroke="currentColor"></line>
+            <line x1="12" y1="6" x2="12" y2="9" stroke="currentColor"></line>
+            <line x1="15" y1="12" x2="18" y2="12" stroke="currentColor"></line>
+            <line x1="12" y1="15" x2="12" y2="18" stroke="currentColor"></line>
+          </svg>
+        </div>
+      </div>
+
+      <div class="languages">
+        Languages:
+        <a href="#">हिंदी</a>
+        <a href="#">বাংলা</a>
+        <a href="#">اردو</a>
+        <a href="#">ਪੰਜਾਬੀ</a>
+        <a href="#">मराठी</a>
+        <a href="#">తెలుగు</a>
+        <a href="#">தமிழ்</a>
+        <a href="#">ಕನ್ನಡ</a>
+        <a href="#">ગુજરાતી</a>
+        <a href="#">മലയാളം</a>
+        <a href="#">ଓଡ଼ିଆ</a>
+      </div>
+
+      <div class="vertical-scroll-container">
+        <!-- Popular Destinations -->
+        <section class="category-section">
+          <h2 class="category-title">Popular Destinations</h2>
+          <div class="cards-container">
+            <div class="card">
+              <img src="images/paris.jpg" alt="Paris" class="card-image" />
+              <div class="card-overlay">
+                <h3 class="card-title">Paris, France</h3>
+                <p class="card-description">
+                  Experience the city of lights and romance
+                </p>
+              </div>
+            </div>
+            <div class="card">
+              <img src="images/Tokyo.jpg" alt="Tokyo" class="card-image" />
+              <div class="card-overlay">
+                <h3 class="card-title">Tokyo, Japan</h3>
+                <p class="card-description">Where tradition meets innovation</p>
+              </div>
+            </div>
+            <div class="card">
+              <img
+                src="images/new york.jpg"
+                alt="New York"
+                class="card-image"
+              />
+              <div class="card-overlay">
+                <h3 class="card-title">New York, USA</h3>
+                <p class="card-description">The city that never sleeps</p>
+              </div>
+            </div>
+            <div class="card">
+              <img
+                src="images/paris.jpg"
+                alt="Venice"
+                class="card-image"
+              />
+              <div class="card-overlay">
+                <h3 class="card-title">Venice, Italy</h3>
+                <p class="card-description">
+                  Float through history on gondolas
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Nature Wonders -->
+        <section class="category-section">
+          <h2 class="category-title">Nature Wonders</h2>
+          <div class="cards-container">
+            <div class="card">
+              <img src="images/grand.jpg" alt="Grand Canyon" class="card-image" />
+              <div class="card-overlay">
+                <h3 class="card-title">Grand Canyon</h3>
+                <p class="card-description">Nature's masterpiece in Arizona</p>
+              </div>
+            </div>
+            <div class="card">
+              <img
+                src="images/great barrier.jpg"
+                alt="Great Barrier Reef"
+                class="card-image"
+              />
+              <div class="card-overlay">
+                <h3 class="card-title">Great Barrier Reef</h3>
+                <p class="card-description">
+                  World's largest coral reef system
+                </p>
+              </div>
+            </div>
+            <div class="card">
+              <img
+                src="images/northern.jpg"
+                alt="Northern Lights"
+                class="card-image"
+              />
+              <div class="card-overlay">
+                <h3 class="card-title">Northern Lights</h3>
+                <p class="card-description">Aurora Borealis in Iceland</p>
+              </div>
+            </div>
+            <div class="card">
+              <img
+                src="images/mount event.jpg"
+                alt="Mount Everest"
+                class="card-image"
+              />
+              <div class="card-overlay">
+                <h3 class="card-title">Mount Everest</h3>
+                <p class="card-description">World's highest peak</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cultural Experiences -->
+        <section class="category-section">
+          <h2 class="category-title">Cultural Experiences</h2>
+          <div class="cards-container">
+            <div class="card">
+              <img src="images/festival.jpg" alt="Indian Festival" class="card-image" />
+              <div class="card-overlay">
+                <h3 class="card-title">Diwali Festival</h3>
+                <p class="card-description">Festival of lights in India</p>
+              </div>
+            </div>
+            <div class="card">
+              <img
+                src="images/chines.jpg"
+                alt="Chinese New Year"
+                class="card-image"
+              />
+              <div class="card-overlay">
+                <h3 class="card-title">Chinese New Year</h3>
+                <p class="card-description">Spring Festival celebrations</p>
+              </div>
+            </div>
+            <div class="card">
+              <img
+                src="images/rio.jpg"
+                alt="Rio Carnival"
+                class="card-image"
+              />
+              <div class="card-overlay">
+                <h3 class="card-title">Rio Carnival</h3>
+                <p class="card-description">World's biggest carnival</p>
+              </div>
+            </div>
+            <div class="card">
+              <img
+                src="images/okto.jpg"
+                alt="Oktoberfest"
+                class="card-image"
+              />
+              <div class="card-overlay">
+                <h3 class="card-title">Oktoberfest</h3>
+                <p class="card-description">German beer festival</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- More sections can be added here -->
+      </div>
+    </main>
+  </body>
+</html>
